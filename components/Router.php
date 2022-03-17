@@ -33,7 +33,10 @@ class Router{
                 */
 
                 //ОПРЕДЕЛИТЬ КАКОЙ КОНТРОЛЛЕР И ACTION ОБРАБАТЫВАЮТ ЗАПРОС
-                $segments=explode('/',$path);
+                
+                $internalRoute=preg_replace("~$uriPattern~",$path,$uri);
+                
+                $segments=explode('/',$internalRoute);
                 /*
                 echo "<pre>";
                 print_r($segments);
@@ -52,8 +55,16 @@ class Router{
                 # ТАК ЖЕ КАК И ВЫШЕ ИЗВЛЕКАЕМ ПЕРВЫЙ ЭЛЕМЕМЕНТ ИЗ ЭЛЕМЕНТОВ ОСТАВШИХСЯ В МАССИВЕ
                 # ДОБАВЛЯЕМ С ПЕРЕДИ СТРОКУ 'action'
                 $actionName='action'.ucfirst(array_shift($segments));
-                //echo $actionName; //Имя action (метода)
-
+                
+              //  echo '<br>';
+              //  echo $controllerName; //Имя controller (контроллнер)
+              //  echo '<br>';
+              //  echo $actionName; //Имя action (метода)
+                
+              //  echo '<br>';
+                $parameters=$segments;
+              //  print_r($parameters); //Имя param (параметр запроса)
+                
                 // ПОДКЛЮЧИТЬ ФАЙЛ КЛАССА-КОНТРОЛЛЕРА
 
                 # ОПРЕДЕЛЯЕМ ФАЙЛ, ПУТЬ И НАЗВАНИЕ
@@ -66,7 +77,10 @@ class Router{
 
                 // СОЗДАТЬ ОБЪЕКТ, ВЫЗВАТЬ МЕТОД (Т.Е. ACTION)
                 $controllerObject = new $controllerName;
-                $result=$controllerObject->$actionName();
+                
+               // $result=$controllerObject->$actionName($parameters);
+                
+                $result=call_user_func_array(array($controllerObject,$actionName), $parameters);
 
                 if ($result!=null) {
                     break;
